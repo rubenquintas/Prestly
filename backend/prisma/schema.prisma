@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+model Company {
+  id            String        @id @default(uuid())
+  name          String
+  departments   Department[]
+  items         Item[]
+  users         AdminUser[]
+}
+
+model Department {
+  id            String        @id @default(uuid())
+  name          String
+  companyId     String
+  company       Company       @relation(fields: [companyId], references: [id])
+  borrowers     Borrower[]
+}
+
+model AdminUser {
+  id            String        @id @default(uuid())
+  email         String        @unique
+  password      String
+  name          String
+  companyId     String
+  company       Company       @relation(fields: [companyId], references: [id])
+}
+
+model Item {
+  id            String        @id @default(uuid())
+  name          String
+  status        String        @default("AVAILABLE")
+  companyId     String
+  company       Company       @relation(fields: [companyId], references: [id])
+  loans         Loan[]
+}
+
+model Borrower {
+  id            String        @id @default(uuid())
+  name          String
+  email         String?
+  departmentId  String
+  department    Department    @relation(fields: [departmentId], references: [id])
+  loans         Loan[]
+}
+
+model Loan {
+  id            String        @id @default(uuid())
+  itemId        String
+  item          Item          @relation(fields: [itemId], references: [id])
+  borrowerId    String
+  borrower      Borrower      @relation(fields: [borrowerId], references: [id])
+  startDate     DateTime      @default(now())
+  returnDate    DateTime?
+}
+
