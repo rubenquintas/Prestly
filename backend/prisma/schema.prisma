@@ -63,6 +63,7 @@ model Loan {
   borrowerId    String
   borrower      Borrower      @relation(fields: [borrowerId], references: [id])
   startDate     DateTime      @default(now())
+  dueDate       DateTime
   returnDate    DateTime?
 }
 
