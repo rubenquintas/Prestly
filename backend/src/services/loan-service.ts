@@ -1,7 +1,7 @@
 import prisma from '../infrastructure/prisma'
 
 export class LoanService {
-  async createLoan(itemId: string, borrowerId: string) {
+  async createLoan(itemId: string, borrowerId: string, dueDate: string) {
     return await prisma.$transaction(async (tx) => {
       const item = await tx.item.findUnique({ where: { id: itemId } })
       if (!item || item.status !== 'AVAILABLE') {
@@ -12,7 +12,8 @@ export class LoanService {
         data: {
           itemId,
           borrowerId,
-          startDate: new Date()
+          startDate: new Date(),
+          dueDate: new Date(dueDate)
         }
       })
 

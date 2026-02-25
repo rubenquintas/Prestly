@@ -14,7 +14,12 @@ export const createItem = async (req: any, res: Response) => {
 
 export const getItems = async (req: any, res: Response) => {
   try {
-    const items = await itemService.getCompanyItems(req.user.companyId)
+    const { search, status } = req.query
+    const items = await itemService.getCompanyItems(
+      req.user.companyId,
+      search as string,
+      status as string
+    )
     res.json(items)
   } catch (error: any) {
     res.status(500).json({ error: error.message })

@@ -11,10 +11,14 @@ export class ItemService {
     })
   }
 
-  async getCompanyItems(companyId: string) {
+  async getCompanyItems(companyId: string, search?: string, status?: string) {
     return await prisma.item.findMany({
-      where: { companyId },
-      include: { loans: true }
+      where: {
+        companyId,
+        name: search ? { contains: search, mode: 'insensitive' } : undefined,
+        status: status ? (status as any) : undefined
+      },
+      orderBy: { updatedAt: 'desc' }
     })
   }
 }
