@@ -6,6 +6,7 @@ import dotenv from 'dotenv'
 import authRoutes from './api/routes/auth-routes'
 import itemRoutes from './api/routes/item-routes'
 import borrowerRoutes from './api/routes/borrower-routes'
+import loanRoutes from './api/routes/loan-routes'
 import { authenticateToken } from './api/middlewares/auth-middleware'
 
 dotenv.config()
@@ -32,6 +33,7 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes)
 app.use('/api/items', itemRoutes)
 app.use('/api/borrowers', borrowerRoutes)
+app.use('/api/loans', loanRoutes)
 
 app.get('/api/protected-test', authenticateToken, (req: any, res) => {
   res.json({
