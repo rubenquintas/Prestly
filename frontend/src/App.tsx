@@ -3,6 +3,7 @@ import { Login } from "./pages/Login";
 import type React from "react";
 import { useAuth } from "./context/useAuth";
 import { AuthProvider } from "./context/AuthProvider";
+import { Dashboard } from "./pages/Dashboard";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -20,14 +21,7 @@ function App() {
             path="/"
             element={
               <ProtectedRoute>
-                <div className="p-10">
-                  <h1 className="text-3xl font-bold text-slate-900">
-                    Bienvenido a Prestly
-                  </h1>
-                  <p className="mt-2 text-slate-600">
-                    El sistema de gestión está listo
-                  </p>
-                </div>
+                <Dashboard />
               </ProtectedRoute>
             }
           />
