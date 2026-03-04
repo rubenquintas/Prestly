@@ -1,19 +1,39 @@
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { Login } from "./pages/Login";
+import type React from "react";
+import { useAuth } from "./context/useAuth";
+import { AuthProvider } from "./context/AuthProvider";
+
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="p-10 text-center">Cargando...</div>;
+  return user ? children : <Navigate to="/login" />;
+};
+
 function App() {
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-      <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-md w-full text-center">
-        <h1 className="text-3xl font-bold text-indigo-600 mb-4">
-          Tailwind funciona!
-        </h1>
-        <p className="text-slate-600">
-          si ves este fondo oscuro, el botón azul y el texto centrado, tu config
-          manual es perfecta.
-        </p>
-        <button className="mt-6 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
-          Confirmar
-        </button>
-      </div>
-    </div>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <div className="p-10">
+                  <h1 className="text-3xl font-bold text-slate-900">
+                    Bienvenido a Prestly
+                  </h1>
+                  <p className="mt-2 text-slate-600">
+                    El sistema de gestión está listo
+                  </p>
+                </div>
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
