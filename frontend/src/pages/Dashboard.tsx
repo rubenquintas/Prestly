@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { type DashboardStats, getDashboardStats } from "../api/dashboard";
+import {
+  getDashboardStats,
+  type DashboardStats,
+  type DashboardLoan,
+} from "../api/dashboard";
 import {
   AlertCircle,
   CheckCircle2,
@@ -7,20 +11,6 @@ import {
   Calendar,
   User,
 } from "lucide-react";
-
-interface LoanItem {
-  id: string;
-  item: {
-    name: string;
-  };
-  borrower: {
-    name: string;
-    email: string;
-    department: {
-      name: string;
-    };
-  };
-}
 
 export const Dashboard = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -147,7 +137,7 @@ export const Dashboard = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 divide-y divide-slate-100">
-              {stats?.expiringToday.map((loan: LoanItem) => (
+              {stats?.expiringToday.map((loan: DashboardLoan) => (
                 <div
                   key={loan.id}
                   className="flex items-center justify-between p-6 hover:bg-slate-50 transition-colors group"
