@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
-import { getItems } from "../api/items";
+import { useCallback, useEffect, useState } from "react";
+import { createItem, getItems } from "../api/items";
 import type { Item } from "../types";
 import { Search, Plus, Package, Filter } from "lucide-react";
+import { Modal } from "../components/Modal";
 
 export const Inventory = () => {
   const [items, setItems] = useState<Item[]>([]);
@@ -9,22 +10,44 @@ export const Inventory = () => {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
-  useEffect(() => {
-    const fetchItems = async () => {
-      setLoading(true);
-      try {
-        const data = await getItems(search, statusFilter);
-        setItems(data);
-      } catch (error) {
-        console.error("Error fetching items", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newItemName, setNewItemName] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const fetchItems = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await getItems(search, statusFilter);
+      setItems(data);
+    } catch (error) {
+      console.error("Error fetching items", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [search, statusFilter]);
+
+  useEffect(() => {
     const timeout = setTimeout(fetchItems, 300);
     return () => clearTimeout(timeout);
-  }, [search, statusFilter]);
+  }, [fetchItems]);
+
+  const handleCreateItem = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!newItemName.trim()) return;
+
+    setIsSubmitting(true);
+    try {
+      await createItem(newItemName);
+      setNewItemName("");
+      setIsModalOpen(false);
+      fetchItems();
+    } catch (error) {
+      console.error(error);
+      alert("Error al crear el equipo");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const getStatusBadge = (status: Item["status"]) => {
     const styles = {
@@ -59,7 +82,10 @@ export const Inventory = () => {
             Gestiona y controla los equipos
           </p>
         </div>
-        <button className="bg-indigo-600 text-white px-6 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 active:scale-95">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="bg-indigo-600 text-white px-6 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 active:scale-95"
+        >
           <Plus size={20} />
           Nuevo Equipo
         </button>
@@ -161,6 +187,44 @@ export const Inventory = () => {
           </table>
         )}
       </div>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Añadir nuevo equipo"
+      >
+        <form onSubmit={handleCreateItem} className="space-y-6">
+          <div>
+            <label className="block text-sm font-bold text-slate-700 mb-2">
+              Nombre del equipo / Modelo
+            </label>
+            <input
+              type="text"
+              placeholder="Ej: MackBook Pro"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all font-medium"
+              value={newItemName}
+              onChange={(e) => setNewItemName(e.target.value)}
+              autoFocus
+              required
+            />
+          </div>
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(false)}
+              className="flex-1 px-4 py-3 border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-all"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex-1 px-4 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 disabled:opacity-50"
+            >
+              {isSubmitting ? "Guardando..." : "Guardar equipo"}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 };
