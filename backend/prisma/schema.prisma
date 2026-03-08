@@ -10,62 +10,67 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
 model Company {
-  id            String        @id @default(uuid())
-  name          String
-  departments   Department[]
-  items         Item[]
-  users         AdminUser[]
+  id          String       @id @default(uuid())
+  name        String
+  departments Department[]
+  borrowers   Borrower[]
+  loans       Loan[]
+  items       Item[]
+  users       AdminUser[]
 }
 
 model Department {
-  id            String        @id @default(uuid())
-  name          String
-  companyId     String
-  company       Company       @relation(fields: [companyId], references: [id])
-  borrowers     Borrower[]
+  id        String     @id @default(uuid())
+  name      String
+  companyId String
+  company   Company    @relation(fields: [companyId], references: [id])
+  borrowers Borrower[]
 }
 
 model AdminUser {
-  id            String        @id @default(uuid())
-  email         String        @unique
-  password      String
-  name          String
-  companyId     String
-  company       Company       @relation(fields: [companyId], references: [id])
+  id        String  @id @default(uuid())
+  email     String  @unique
+  password  String
+  name      String
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
 }
 
 model Item {
-  id            String        @id @default(uuid())
-  name          String
-  status        String        @default("AVAILABLE")
-  companyId     String
-  company       Company       @relation(fields: [companyId], references: [id])
-  loans         Loan[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id        String   @id @default(uuid())
+  name      String
+  status    String   @default("AVAILABLE")
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id])
+  loans     Loan[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Borrower {
-  id            String        @id @default(uuid())
-  name          String
-  email         String?
-  departmentId  String
-  department    Department    @relation(fields: [departmentId], references: [id])
-  loans         Loan[]
+  id           String     @id @default(uuid())
+  name         String
+  email        String?
+  companyId    String
+  company      Company    @relation(fields: [companyId], references: [id])
+  departmentId String
+  department   Department @relation(fields: [departmentId], references: [id])
+  loans        Loan[]
 }
 
 model Loan {
-  id            String        @id @default(uuid())
-  itemId        String
-  item          Item          @relation(fields: [itemId], references: [id])
-  borrowerId    String
-  borrower      Borrower      @relation(fields: [borrowerId], references: [id])
-  startDate     DateTime      @default(now())
-  dueDate       DateTime
-  returnDate    DateTime?
+  id         String    @id @default(uuid())
+  itemId     String
+  item       Item      @relation(fields: [itemId], references: [id])
+  companyId  String
+  company    Company   @relation(fields: [companyId], references: [id])
+  borrowerId String
+  borrower   Borrower  @relation(fields: [borrowerId], references: [id])
+  startDate  DateTime  @default(now())
+  dueDate    DateTime
+  returnDate DateTime?
 }
-

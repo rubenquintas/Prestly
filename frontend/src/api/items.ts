@@ -27,5 +27,5 @@ export const updateItem = async (
 };
 
 export const deleteItem = async (id: string): Promise<void> => {
-  await api.delete(`/ítems/${id}`);
+  await api.delete(`/items/${id}`);
 };

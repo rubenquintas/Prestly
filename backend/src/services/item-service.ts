@@ -21,4 +21,28 @@ export class ItemService {
       orderBy: { updatedAt: 'desc' }
     })
   }
+
+  async updateItem(id: string, companyId: string, data: { name?: string; status?: string }) {
+    return await prisma.item.update({
+      where: { id, companyId },
+      data: {
+        name: data.name,
+        status: data.status as any
+      }
+    })
+  }
+
+  async deleteItem(id: string, companyId: string) {
+    const loansCount = await prisma.loan.count({
+      where: { itemId: id, companyId }
+    })
+
+    if (loansCount > 0) {
+      throw new Error('ITEM_HAS_ACTIVE_LOANS')
+    }
+
+    return await prisma.item.delete({
+      where: { id, companyId }
+    })
+  }
 }

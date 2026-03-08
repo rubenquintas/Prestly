@@ -23,11 +23,18 @@ export const getDepts = async (req: any, res: Response) => {
 
 export const createBorrower = async (req: any, res: Response) => {
   try {
-    const { departmentId, name, email } = req.body
-    const borrower = await borrowerService.createBorrower(departmentId, name, email)
+    const { companyId } = req.user as any
+    const { name, email, departmentId } = req.body
+
+    if (!departmentId) {
+      return res.status(400).json({ error: 'El departamento es obligatorio' })
+    }
+
+    const borrower = await borrowerService.createBorrower(companyId, { name, email, departmentId })
     res.status(201).json(borrower)
   } catch (error: any) {
-    res.status(400).json({ error: error.message })
+    console.error('ERROR CREANDO BENEFICIARIO:', error)
+    res.status(500).json({ error: 'No se pudo crear el beneficiario. ¿Email duplicado?' })
   }
 }
 
@@ -37,5 +44,32 @@ export const getBorrowers = async (req: any, res: Response) => {
     res.json(borrowers)
   } catch (error: any) {
     res.status(500).json({ error: error.message })
+  }
+}
+
+export const updateBorrower = async (req: any, res: Response) => {
+  try {
+    const { id } = req.params
+    const { companyId } = req.user as any
+    console.log(id, companyId, req.body)
+    const borrower = await borrowerService.updateBorrower(id, companyId, req.body)
+    res.json(borrower)
+  } catch (error) {
+    res.status(500).json({ error: 'Error al actualizar el beneficiario' })
+  }
+}
+
+export const deleteBorrower = async (req: any, res: Response) => {
+  try {
+    const { id } = req.params
+    const { companyId } = req.user as any
+    await borrowerService.deleteBorrower(id, companyId)
+    res.status(204).send()
+  } catch (error: any) {
+    const message =
+      error.message === 'BORROWER_HAS_HISTORY'
+        ? 'No se puede eliminar un beneficiario con historial de préstamos'
+        : 'Error al eliminar beneficiario'
+    res.status(400).json({ error: message })
   }
 }

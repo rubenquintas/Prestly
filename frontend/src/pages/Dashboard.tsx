@@ -25,7 +25,7 @@ export const Dashboard = () => {
 
   const getStatusColor = (count: number) => {
     if (count === 0) return "bg-emerald-500 shadow-emerald-200";
-    if (count <= 5) return "bd-amber-500 shadow-amber-200";
+    if (count <= 5) return "bg-amber-500 shadow-amber-200";
     return "bg-rose-600 shadow-rose-200";
   };
 
