@@ -73,4 +73,5 @@ model Loan {
   startDate  DateTime  @default(now())
   dueDate    DateTime
   returnDate DateTime?
+  status     String    @default("ACTIVE")
 }

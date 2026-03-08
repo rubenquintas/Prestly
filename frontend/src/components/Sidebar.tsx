@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Package, LogOut, Users } from "lucide-react";
+import { LayoutDashboard, Package, LogOut, Users, Clock } from "lucide-react";
 import { useAuth } from "../context/useAuth";
 
 export const Sidebar = () => {
@@ -10,6 +10,7 @@ export const Sidebar = () => {
     { name: "Dashboard", path: "/", icon: LayoutDashboard },
     { name: "Inventario", path: "/inventory", icon: Package },
     { name: "Personal", path: "/borrowers", icon: Users },
+    { name: "Préstamos", path: "/loans", icon: Clock },
   ];
 
   return (

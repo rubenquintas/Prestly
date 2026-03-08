@@ -6,7 +6,8 @@ const loanService = new LoanService()
 export const startLoan = async (req: any, res: Response) => {
   try {
     const { itemId, borrowerId, dueDate } = req.body
-    const loan = await loanService.createLoan(itemId, borrowerId, dueDate)
+    const { companyId } = req.user
+    const loan = await loanService.createLoan(companyId, itemId, borrowerId, dueDate)
     res.status(201).json(loan)
   } catch (error: any) {
     res.status(400).json({ error: error.message })
@@ -16,7 +17,8 @@ export const startLoan = async (req: any, res: Response) => {
 export const finishLoan = async (req: any, res: Response) => {
   try {
     const { id } = req.params
-    const loan = await loanService.returnLoan(id)
+    const { companyId } = req.user
+    const loan = await loanService.returnLoan(companyId, id)
     res.json(loan)
   } catch (error: any) {
     res.status(400).json({ error: error.message })
