@@ -6,6 +6,7 @@ import { AuthProvider } from "./context/AuthProvider";
 import { Dashboard } from "./pages/Dashboard";
 import { Sidebar } from "./components/Sidebar";
 import { Inventory } from "./pages/Inventory";
+import { Borrowers } from "./pages/Borrowers";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -42,6 +43,16 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <Inventory />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/borrowers"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Borrowers />
                 </Layout>
               </ProtectedRoute>
             }
