@@ -17,3 +17,15 @@ export const createItem = async (name: string): Promise<Item> => {
   const { data } = await api.post("/items", { name });
   return data;
 };
+
+export const updateItem = async (
+  id: string,
+  data: { name?: string; status?: string },
+): Promise<Item> => {
+  const { data: response } = await api.put(`/items/${id}`, data);
+  return response;
+};
+
+export const deleteItem = async (id: string): Promise<void> => {
+  await api.delete(`/ítems/${id}`);
+};

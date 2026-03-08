@@ -1,7 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
-import { createItem, getItems } from "../api/items";
+import { createItem, deleteItem, getItems, updateItem } from "../api/items";
 import type { Item } from "../types";
-import { Search, Plus, Package, Filter } from "lucide-react";
+import {
+  Search,
+  Plus,
+  Package,
+  Filter,
+  Wrench,
+  Edit2,
+  Trash2,
+} from "lucide-react";
 import { Modal } from "../components/Modal";
 
 export const Inventory = () => {
@@ -13,6 +21,8 @@ export const Inventory = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newItemName, setNewItemName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [editingItem, setEditingItem] = useState<Item | null>(null);
 
   const fetchItems = useCallback(async () => {
     setLoading(true);
@@ -46,6 +56,28 @@ export const Inventory = () => {
       alert("Error al crear el equipo");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleStatusChange = async (id: string, newStatus: string) => {
+    try {
+      await updateItem(id, { status: newStatus });
+      fetchItems();
+    } catch (error) {
+      console.error(error);
+      alert("Error al actualizar el estado");
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm("¿Estás seguro de que quieres eliminar este equipo?")) {
+      try {
+        await deleteItem(id);
+        fetchItems();
+      } catch (error) {
+        console.error(error);
+        alert("No se puede eliminar un equipo que tiene préstamos asociados");
+      }
     }
   };
 
@@ -176,10 +208,30 @@ export const Inventory = () => {
                       })}
                     </p>
                   </td>
-                  <td className="px-8 py-6 text-right">
-                    <button className="text-slate-400 hover:text-indigo-600 font-bold text-sm">
-                      Detalles
-                    </button>
+                  <td className="px-8 py-6 text-right relative group">
+                    <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        onClick={() => handleStatusChange(item.id, "REPAIRING")}
+                        className="p-2 hover:bg-rose-50 text-rose-500 rounded-lg"
+                        title="Mandar a Reparar"
+                      >
+                        <Wrench size={18} />
+                      </button>
+
+                      <button
+                        onClick={() => setEditingItem(item)}
+                        className="p-2 hover:bg-indigo-50 text-indigo-600 rounded-lg"
+                      >
+                        <Edit2 size={18} />
+                      </button>
+
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        className="p-2 hover:bg-slate-100 text-slate-400 hover:text-rose-600 rounded-lg"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -224,6 +276,65 @@ export const Inventory = () => {
             </button>
           </div>
         </form>
+      </Modal>
+      <Modal
+        isOpen={!!editingItem}
+        onClose={() => setEditingItem(null)}
+        title="Editar equipo"
+      >
+        {editingItem && (
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              await updateItem(editingItem.id, {
+                name: editingItem.name,
+                status: editingItem.status,
+              });
+              setEditingItem(null);
+              fetchItems();
+            }}
+            className="space-y-4"
+          >
+            <div>
+              <label className="block text-sm font-bold text-slate-700 mb-1">
+                Nombre
+              </label>
+              <input
+                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl"
+                value={editingItem.name}
+                onChange={(e) =>
+                  setEditingItem({ ...editingItem, name: e.target.value })
+                }
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-slate-700 mb-1">
+                Estado
+              </label>
+              <select
+                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl font-bold"
+                value={editingItem.status}
+                onChange={(e) =>
+                  setEditingItem({
+                    ...editingItem,
+                    status: e.target.value as Item["status"],
+                  })
+                }
+              >
+                <option value="AVAILABLE">Disponible</option>
+                <option value="IN_USE">En Uso</option>
+                <option value="REPAIRING">En Reparación</option>
+                <option value="RETIRED">Retirado</option>
+              </select>
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold"
+            >
+              Guardar Cambios
+            </button>
+          </form>
+        )}
       </Modal>
     </div>
   );
