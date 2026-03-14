@@ -17,7 +17,7 @@ export class DashboardService {
     const outOfServiceCount = await prisma.item.count({
       where: {
         companyId,
-        status: { in: ['REPAIRING', 'RETIRED'] }
+        status: { in: ['REPAIRING'] }
       }
     })
 
