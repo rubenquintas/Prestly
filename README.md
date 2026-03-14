@@ -1,6 +1,6 @@
 # 🛠️ Prestly - Sistema de Gestión de Préstamos y Activos
  
-**Prestly** es una aplicación Full-Stack multitenant diseñada para centros educativos y empresas que necesitan gestionar el flujo de préstamos de herramientas, equipos electrónicos y material de inventario de forma eficiente y visual.
+**Prestly** es una aplicación Full-Stack multitenant diseñada para gestionar el flujo de préstamos de artículos de forma eficiente y visual.
  
 ![Tech Stack](https://img.shields.io/badge/Stack-React%20%7C%20Node.js%20%7C%20Prisma%20%7C%20PostgreSQL-blue)
  
